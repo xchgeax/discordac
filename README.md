@@ -24,7 +24,7 @@ Next, the manager must be initialized
 
 `DiSlash.Init()`
 
-You can now create your own commands and register them with on of the options
+You can now create your own commands and register them with one of the options
 
 `DiSlash.RegisterCommand(SlashedCommand)`
 
@@ -33,5 +33,9 @@ You can now create your own commands and register them with on of the options
 `DiSlash.RegisterCommandWithin(guildId, SlashedCommand)`
 
 `DiSlash.RegisterCommandsWithin(guildId, ...SlashedCommands)`
+
+During bot shutdown, you should also unregister all the commands
+
+`DiSlash.UnregisterCommands()`
 
 (Please refer to the [examples](https://github.com/vlaetansky/discordslash/tree/master/examples) folder to learn how to create commands)
