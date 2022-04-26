@@ -27,8 +27,11 @@ Next, the manager must be initialized
 You can now create your own commands and register them with on of the options
 
 `DiSlash.RegisterCommand(SlashedCommand)`
+
 `DiSlash.RegisterCommands(...SlashedCommands)`
+
 `DiSlash.RegisterCommandWithin(guildId, SlashedCommand)`
+
 `DiSlash.RegisterCommandsWithin(guildId, ...SlashedCommands)`
 
 (Please refer to the [examples](https://github.com/vlaetansky/discordslash/tree/master/examples) folder to learn how to create commands)
