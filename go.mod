@@ -1,4 +1,4 @@
-module discordslash
+module	github.com/vlaetansky/discordslash
 
 require (
 	github.com/bwmarrin/discordgo v0.25.0
