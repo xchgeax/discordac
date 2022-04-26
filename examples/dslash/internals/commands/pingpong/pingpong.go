@@ -1,8 +1,8 @@
 package pingpong
 
 import (
-	"discordslash"
 	"github.com/bwmarrin/discordgo"
+	"github.com/vlaetansky/discordslash"
 )
 
 var Command = discordslash.SlashedCommand{

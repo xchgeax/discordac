@@ -1,11 +1,11 @@
 package wikipedia
 
 import (
-	"discordslash"
 	"encoding/xml"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/sirupsen/logrus"
+	"github.com/vlaetansky/discordslash"
 	"io/ioutil"
 	"log"
 	"net/http"
