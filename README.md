@@ -24,6 +24,10 @@ Next, the manager must be initialized
 
 `DiSlash.Init()`
 
+In order to register application commands you must first open a websocket connection
+
+`discordGoSession.Open()`
+
 You can now create your own commands and register them with one of the options
 
 `DiSlash.RegisterCommand(SlashedCommand)`
