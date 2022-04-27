@@ -1,6 +1,7 @@
 # Discord Applied Commands
+[![GoDoc](https://godoc.org/github.com/vlaetansky/discordac?status.svg)](https://godoc.org/github.com/vlaetansky/discordac) 
 
-**Discord Applied Commands** is a Go package that provides an easy way to manage Discord's commands.
+**Discord Applied Commands** is a Go package that provides an easy way to manage Discord commands.
 It provides a high level API to make and register commands for your Discord Bot.
 
 **The package is in an early state of development, any kind of contribution is welcomed!**
