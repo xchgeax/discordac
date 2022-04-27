@@ -1,4 +1,4 @@
-module	github.com/vlaetansky/discordslash
+module	github.com/vlaetansky/discordac
 
 require (
 	github.com/bwmarrin/discordgo v0.25.0
