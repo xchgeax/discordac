@@ -2,7 +2,7 @@ package pingpong
 
 import (
 	"github.com/bwmarrin/discordgo"
-	"github.com/vlaetansky/discordslash"
+	"github.com/vlaetansky/discordac"
 )
 
 var Command = &discordac.AppliedCommand{

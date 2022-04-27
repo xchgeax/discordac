@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/sirupsen/logrus"
-	"github.com/vlaetansky/discordslash"
+	"github.com/vlaetansky/discordac"
 	"io/ioutil"
 	"log"
 	"net/http"
