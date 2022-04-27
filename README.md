@@ -1,4 +1,6 @@
 # Discord Applied Commands
+[![Go Report Card](https://goreportcard.com/badge/github.com/vlaetansky/discordac)](https://goreportcard.com/report/github.com/vlaetansky/discordac)
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![GoDoc](https://godoc.org/github.com/vlaetansky/discordac?status.svg)](https://godoc.org/github.com/vlaetansky/discordac) 
 
 **Discord Applied Commands** is a Go package that provides an easy way to manage Discord commands.
