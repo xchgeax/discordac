@@ -5,7 +5,7 @@ import (
 	"github.com/vlaetansky/discordslash"
 )
 
-var Command = discordslash.SlashedCommand{
+var Command = &discordslash.SlashedCommand{
 	Specification: &discordgo.ApplicationCommand{
 		Name:        "ping",
 		Description: "Ping Pong Command",

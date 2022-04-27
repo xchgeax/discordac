@@ -1,6 +1,7 @@
 package discordslash
 
 import (
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/sirupsen/logrus"
 )
@@ -30,59 +31,57 @@ func (ds *DiscordSlash) Init() {
 	})
 }
 
-// RegisterCommandWithin registers a command for a specific guild
-// command	: command to register
-// guildId	: ID of a guild to register the command for
-func (ds *DiscordSlash) RegisterCommandWithin(command SlashedCommand, guildId string) (err error) {
-	command.GuildId = guildId
-	err = ds.RegisterCommand(command)
-
-	return
-}
-
-// RegisterCommandsWithin registers a list of commands for a specific guild
-// guildId		: ID of a guild to register commands for
-// commands		: commands to register
-func (ds *DiscordSlash) RegisterCommandsWithin(guildId string, commands ...SlashedCommand) {
-	for _, command := range commands {
-		err := ds.RegisterCommandWithin(command, guildId)
-		if err != nil {
-			logrus.WithError(err).Errorf("Couldn't register command %v within %v", command.Name(), guildId)
-		}
-	}
-}
-
-// RegisterCommands registers a list of commands globally
+// RegisterCommands registers a list of commands
+// guildId  : guild to register the commands in, leave blank to register it globally
 // commands	: commands to register
-func (ds *DiscordSlash) RegisterCommands(commands ...SlashedCommand) {
+func (ds *DiscordSlash) RegisterCommands(guildId string, commands ...*SlashedCommand) error {
+	var specifications []*discordgo.ApplicationCommand
+
+	// Save specifications of provided commands and check if they are unique
 	for _, command := range commands {
-		err := ds.RegisterCommand(command)
-		if err != nil {
-			logrus.WithError(err).Errorf("Couldn't register command %v", command.Name())
+		if commandExist(command.Name()) {
+			panic(fmt.Sprintf("Command already registered: %v", command.Name()))
 		}
-	}
-}
 
-// RegisterCommand registers a command globally
-// command	: command to register
-func (ds *DiscordSlash) RegisterCommand(command SlashedCommand) (err error) {
-	if commandExist(command.Name()) {
-		logrus.Panicf("Command already registered: %v", command.Name())
+		specifications = append(specifications, command.Specification)
 	}
 
-	if command.Global() {
-		logrus.Infof("Registering new global command %v...", command.Name())
-	} else {
-		logrus.Infof("Registering new command %v within %v", command.Name(), command.GuildId)
-	}
-
-	// Tell discord about our commands specifications
-	command.Specification, err = ds.session.ApplicationCommandCreate(ds.session.State.User.ID, command.GuildId, command.Specification)
+	createdCommandsSpecs, err := ds.session.ApplicationCommandBulkOverwrite(ds.session.State.User.ID, guildId, specifications)
 	if err != nil {
 		return err
 	}
-	// Add a command to the dispatcher list to invoke and unregister it later
-	addCommand(command)
+
+	// Update commands specifications
+	// Discord returns a modified specification with an assigned command ID
+	for _, newSpecification := range createdCommandsSpecs {
+		for _, command := range commands {
+			if newSpecification.Type == command.Specification.Type && newSpecification.Name == command.Name() {
+				command.Specification = newSpecification
+			}
+		}
+	}
+
+	addCommands(commands...)
+
+	return nil
+}
+
+// RegisterCommand registers a single command
+// guildId  : guild to register the commands in, leave blank to register it globally
+// command	: command to register
+func (ds *DiscordSlash) RegisterCommand(guildId string, command *SlashedCommand) error {
+	if commandExist(command.Name()) {
+		panic(fmt.Sprintf("Command already registered: %v", command.Name()))
+	}
+
+	createdCommandSpec, err := ds.session.ApplicationCommandCreate(ds.session.State.User.ID, guildId, command.Specification)
+	if err != nil {
+		return err
+	}
+
+	command.Specification = createdCommandSpec
+
+	addCommands(command)
 
 	return nil
 }
@@ -90,8 +89,7 @@ func (ds *DiscordSlash) RegisterCommand(command SlashedCommand) (err error) {
 // UnregisterCommands unregisters all commands both globally and per guild
 // This should be called during bot shutdown
 func (ds *DiscordSlash) UnregisterCommands() {
-	logrus.Info("Unregistering commands...")
-	for _, command := range commands {
+	for _, command := range registeredCommands {
 		err := ds.session.ApplicationCommandDelete(ds.session.State.User.ID, command.GuildId, command.Specification.ID)
 		if err != nil {
 			logrus.WithError(err).Panicf("Couldn't unregister '%v' command", command.Specification.Name)

@@ -51,17 +51,22 @@ func main() {
 		log.Fatalf("Cannot open the session: %v", err)
 	}
 
-	defer DiSlash.UnregisterCommands()
-	DiSlash.RegisterCommandsWithin(guildId,
+	logrus.Info("Registering commands...")
+	err = DiSlash.RegisterCommands(guildId,
 		pingpong.Command,
 		wikipedia.Command,
 	)
+
+	if err != nil {
+		logrus.WithError(err).Error("Couldn't register commands")
+	}
 
 	defer func(session *discordgo.Session) {
 		err := session.Close()
 		if err != nil {
 			logrus.WithError(err).Info("Couldn't properly close websocket connection to Discord")
 		}
+		logrus.Info("Bye!")
 	}(session)
 
 	stop := make(chan os.Signal, 1)

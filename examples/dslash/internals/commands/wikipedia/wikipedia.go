@@ -12,7 +12,7 @@ import (
 	"net/url"
 )
 
-var Command = discordslash.SlashedCommand{
+var Command = &discordslash.SlashedCommand{
 	Specification: &discordgo.ApplicationCommand{
 		Name:        "wikipedia",
 		Description: "Search wikipedia",
