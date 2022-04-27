@@ -1,4 +1,4 @@
-package discordslash
+package discordac
 
 import (
 	"fmt"
@@ -6,27 +6,26 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// DiscordSlash represents a high level API to command management
-type DiscordSlash struct {
+// DiscordAC represents a high level API to command management
+type DiscordAC struct {
 	session *discordgo.Session
 }
 
-// New creates a new DiscordSlash manager
+// New creates a new DiscordAC manager
 // s	: bot session
-func New(s *discordgo.Session) (dislash *DiscordSlash) {
-	dislash = &DiscordSlash{session: s}
+func New(s *discordgo.Session) (dislash *DiscordAC) {
+	dislash = &DiscordAC{session: s}
 
 	return
 }
 
 // Init initializes command dispatcher by adding a new handler which dispatches and invokes commands
-func (ds *DiscordSlash) Init() {
+func (ds *DiscordAC) Init() {
 	ds.session.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		requestedInteraction := i.ApplicationCommandData().Name
-		if command, ok := dispatchCommand(requestedInteraction); ok {
+		if command, ok := dispatchCommand(i.ApplicationCommandData().ID); ok {
 			go command.Invoke(&CommandContext{Session: s, Interaction: i.Interaction})
 		} else {
-			logrus.Errorf("Coudn't dispatch command %v: no handler registered", requestedInteraction)
+			logrus.Errorf("Coudn't dispatch command %v: no handler registered", i.ApplicationCommandData().Name)
 		}
 	})
 }
@@ -34,15 +33,13 @@ func (ds *DiscordSlash) Init() {
 // RegisterCommands registers a list of commands
 // guildId  : guild to register the commands in, leave blank to register it globally
 // commands	: commands to register
-func (ds *DiscordSlash) RegisterCommands(guildId string, commands ...*SlashedCommand) error {
+func (ds *DiscordAC) RegisterCommands(guildId string, commands ...*AppliedCommand) error {
 	var specifications []*discordgo.ApplicationCommand
 
-	// Save specifications of provided commands and check if they are unique
 	for _, command := range commands {
-		if commandExist(command.Name()) {
-			panic(fmt.Sprintf("Command already registered: %v", command.Name()))
+		if command.Specification.Type == 0 {
+			panic(fmt.Sprintf("Command type must be specified for a command %v", command.Name()))
 		}
-
 		specifications = append(specifications, command.Specification)
 	}
 
@@ -69,9 +66,9 @@ func (ds *DiscordSlash) RegisterCommands(guildId string, commands ...*SlashedCom
 // RegisterCommand registers a single command
 // guildId  : guild to register the commands in, leave blank to register it globally
 // command	: command to register
-func (ds *DiscordSlash) RegisterCommand(guildId string, command *SlashedCommand) error {
-	if commandExist(command.Name()) {
-		panic(fmt.Sprintf("Command already registered: %v", command.Name()))
+func (ds *DiscordAC) RegisterCommand(guildId string, command *AppliedCommand) error {
+	if command.Specification.Type == 0 {
+		panic(fmt.Sprintf("Command type must be specified for a command %v", command.Name()))
 	}
 
 	createdCommandSpec, err := ds.session.ApplicationCommandCreate(ds.session.State.User.ID, guildId, command.Specification)
@@ -88,7 +85,7 @@ func (ds *DiscordSlash) RegisterCommand(guildId string, command *SlashedCommand)
 
 // UnregisterCommands unregisters all commands both globally and per guild
 // This should be called during bot shutdown
-func (ds *DiscordSlash) UnregisterCommands() {
+func (ds *DiscordAC) UnregisterCommands() {
 	for _, command := range registeredCommands {
 		err := ds.session.ApplicationCommandDelete(ds.session.State.User.ID, command.GuildId, command.Specification.ID)
 		if err != nil {

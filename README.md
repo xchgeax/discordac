@@ -1,45 +1,42 @@
-# Discord Slash
+# Discord Applied Commands
 
-**Discord Slash** is a Go package that provides an easy way to manage Discord's new slash commands.
-It provides a high level API to make and register slash commands for your Discord Bot.
+**Discord Applied Commands** is a Go package that provides an easy way to manage Discord's commands.
+It provides a high level API to make and register commands for your Discord Bot.
 
 **The package is in an early state of development, any kind of contribution is welcomed!**
 
 ## Getting Started
 ### Installing
-`go get github.com/vlaetansky/discordslash`
+`go get github.com/vlaetansky/discordac`
 
 ### Usage
 Import the package
 
-`import "github.com/vlaetansky/discordslash"`
+`import "github.com/vlaetansky/discordac"`
 
-Please refer to a DiscordGo documentation to read on how to create a DiscordGo Session.
+Firstly you need to create a DiscordGo session, it will be referred to as _**discordGoSession**_ further.
+Please refer to a DiscordGo documentation to learn on how to create a DiscordGo Session.
 
-Create a new DiscordSlash manager which provides a high level API for managing commands
+Create a new DiscordAC manager which provides a high level API for managing commands
 
-`DiSlash = discordslash.New(discordGoSession)`
+`DAC = discordac.New(discordGoSession)`
 
 Next, the manager must be initialized 
 
-`DiSlash.Init()`
+`DAC.Init()`
 
 In order to register application commands you must first open a websocket connection
 
 `discordGoSession.Open()`
 
-You can now create your own commands and register them with one of the options
+You can now create your own commands ([example commands](https://github.com/vlaetansky/discordac/tree/master/examples/dslash/internals/commands)) and register them with
 
-`DiSlash.RegisterCommand(SlashedCommand)`
+`DAC.RegisterCommands(...SlashedCommands)`
 
-`DiSlash.RegisterCommands(...SlashedCommands)`
+You can register a particular command separately, this can be useful to register a command in a specific guild:
 
-`DiSlash.RegisterCommandWithin(guildId, SlashedCommand)`
+`DAC.RegisterCommand(...SlashedCommands)`
 
-`DiSlash.RegisterCommandsWithin(guildId, ...SlashedCommands)`
+Note: generally you should register your commands using RegisterCommands(..SlashedCommands) method to avoid sending too many command creation requests to Discord API
 
-During bot shutdown, you should also unregister all the commands
-
-`DiSlash.UnregisterCommands()`
-
-(Please refer to the [examples](https://github.com/vlaetansky/discordslash/tree/master/examples) folder to learn how to create commands)
+(Please refer to the [examples](https://github.com/vlaetansky/discordac/tree/master/examples) folder to learn more)

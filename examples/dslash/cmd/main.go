@@ -20,7 +20,7 @@ const (
 var (
 	token   string
 	guildId string
-	DiSlash *discordslash.DiscordSlash
+	DAC     *discordac.DiscordAC
 )
 
 func init() {
@@ -43,8 +43,8 @@ func main() {
 		return
 	}
 
-	DiSlash = discordslash.New(session)
-	DiSlash.Init()
+	DAC = discordac.New(session)
+	DAC.Init()
 
 	err = session.Open()
 	if err != nil {
@@ -52,7 +52,7 @@ func main() {
 	}
 
 	logrus.Info("Registering commands...")
-	err = DiSlash.RegisterCommands(guildId,
+	err = DAC.RegisterCommands(guildId,
 		pingpong.Command,
 		wikipedia.Command,
 	)

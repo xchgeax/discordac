@@ -1,4 +1,4 @@
-package discordslash
+package discordac
 
 import (
 	"github.com/bwmarrin/discordgo"

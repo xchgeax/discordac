@@ -1,30 +1,35 @@
-package discordslash
+package discordac
+
+import (
+	"github.com/bwmarrin/discordgo"
+)
 
 var (
-	// commands is a list of registered SlashedCommand
-	registeredCommands = make(map[string]*SlashedCommand)
+	// commands is a list of registered AppliedCommand
+	registeredCommands = make(map[string]*AppliedCommand)
 )
+
+type DispatchRequest struct {
+	Name string
+	Type discordgo.InteractionType
+}
 
 // addCommands adds commands to the dispatcher list
 // to dispatch and unregister it later
 // commands: command list to register
-func addCommands(commands ...*SlashedCommand) {
+func addCommands(commands ...*AppliedCommand) {
 	for _, command := range commands {
-		registeredCommands[command.Name()] = command
+		if command.Specification.ID == "" {
+			panic("Can not add a command which was not registered")
+		}
+		registeredCommands[command.Specification.ID] = command
 	}
 }
 
-// dispatchCommand dispatches a command and return SlashedCommand and ok=true if dispatched successfully
-// c	: command name
-func dispatchCommand(c string) (command *SlashedCommand, ok bool) {
-	command, ok = registeredCommands[c]
+// dispatchCommand dispatches a command and return AppliedCommand and ok=true if dispatched successfully
+// commandId : id of a command which needs to be dispatched
+func dispatchCommand(commandId string) (command *AppliedCommand, ok bool) {
+	command, ok = registeredCommands[commandId]
 
 	return
-}
-
-// commandExist checks if command is already added to the list
-func commandExist(command string) bool {
-	_, ok := dispatchCommand(command)
-
-	return ok
 }

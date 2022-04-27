@@ -1,11 +1,14 @@
-package discordslash
+package discordac
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"fmt"
+	"github.com/bwmarrin/discordgo"
+)
 
-// SlashedCommand is a command representation inside DiscordSlash
+// AppliedCommand is a command representation inside DiscordAC
 // Wraps command specification described by discordgo.ApplicationCommand
 // and holds a corresponding command handler
-type SlashedCommand struct {
+type AppliedCommand struct {
 	Specification *discordgo.ApplicationCommand
 	// TODO: find a better approach with guild id?
 	GuildId string
@@ -13,19 +16,23 @@ type SlashedCommand struct {
 	Handler func(cc *CommandContext)
 }
 
-// Global determines either SlashCommand is defined to run globally or in SlashedCommand.GuildId
-func (sc SlashedCommand) Global() bool {
+// Global determines either SlashCommand is defined to run globally or in AppliedCommand.GuildId
+func (sc AppliedCommand) Global() bool {
 	return sc.GuildId == ""
 }
 
-// Invoke calls SlashedCommand.Handler
+func (sc AppliedCommand) InternalName() string {
+	return fmt.Sprintf("type%v_%v", sc.Specification.Type, sc.Name())
+}
+
+// Invoke calls AppliedCommand.Handler
 // cc	: CommandContext around which the command will run
-func (sc SlashedCommand) Invoke(cc *CommandContext) {
+func (sc AppliedCommand) Invoke(cc *CommandContext) {
 	cc.parseOptions()
 	sc.Handler(cc)
 }
 
 // Name returns command name
-func (sc SlashedCommand) Name() string {
+func (sc AppliedCommand) Name() string {
 	return sc.Specification.Name
 }

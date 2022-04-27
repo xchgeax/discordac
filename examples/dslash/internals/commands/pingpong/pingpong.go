@@ -5,12 +5,13 @@ import (
 	"github.com/vlaetansky/discordslash"
 )
 
-var Command = &discordslash.SlashedCommand{
+var Command = &discordac.AppliedCommand{
 	Specification: &discordgo.ApplicationCommand{
 		Name:        "ping",
 		Description: "Ping Pong Command",
+		Type:        discordgo.ChatApplicationCommand,
 	},
-	Handler: func(cc *discordslash.CommandContext) {
+	Handler: func(cc *discordac.CommandContext) {
 		cc.Respond("Pong!")
 	},
 }

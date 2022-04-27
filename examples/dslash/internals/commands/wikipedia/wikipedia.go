@@ -12,10 +12,11 @@ import (
 	"net/url"
 )
 
-var Command = &discordslash.SlashedCommand{
+var Command = &discordac.AppliedCommand{
 	Specification: &discordgo.ApplicationCommand{
 		Name:        "wikipedia",
 		Description: "Search wikipedia",
+		Type:        discordgo.ChatApplicationCommand,
 		Options: []*discordgo.ApplicationCommandOption{
 			{
 				Type:        discordgo.ApplicationCommandOptionString,
@@ -25,7 +26,7 @@ var Command = &discordslash.SlashedCommand{
 			},
 		},
 	},
-	Handler: func(cc *discordslash.CommandContext) {
+	Handler: func(cc *discordac.CommandContext) {
 		if query, ok := cc.GetOption("query"); ok {
 			cc.Respond("Searching...")
 			go findWikipedia(query.StringValue(), cc)
@@ -33,7 +34,7 @@ var Command = &discordslash.SlashedCommand{
 	},
 }
 
-func findWikipedia(query string, cc *discordslash.CommandContext) {
+func findWikipedia(query string, cc *discordac.CommandContext) {
 	resp, err := http.Get(
 		fmt.Sprintf("https://en.wikipedia.org/w/api.php?format=xml&action=query&prop=extracts&exsentences=7&exintro&explaintext&exsectionformat=plain&redirects=1&titles=%v", url.QueryEscape(query)))
 	if err != nil {
