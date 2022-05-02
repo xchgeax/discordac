@@ -2,6 +2,7 @@ package discordac
 
 import (
 	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/sirupsen/logrus"
 )
@@ -54,6 +55,7 @@ func (ds *DiscordAC) RegisterCommands(guildId string, commands ...*AppliedComman
 		for _, command := range commands {
 			if newSpecification.Type == command.Specification.Type && newSpecification.Name == command.Name() {
 				command.Specification = newSpecification
+				command.GuildId = guildId
 			}
 		}
 	}
@@ -77,6 +79,7 @@ func (ds *DiscordAC) RegisterCommand(guildId string, command *AppliedCommand) er
 	}
 
 	command.Specification = createdCommandSpec
+	command.GuildId = guildId
 
 	addCommands(command)
 
