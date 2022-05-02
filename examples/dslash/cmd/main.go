@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/sirupsen/logrus"
 	"github.com/vlaetansky/discordac"
 	"github.com/vlaetansky/discordac/examples/dslash/internals/commands/pingpong"
 	"github.com/vlaetansky/discordac/examples/dslash/internals/commands/wikipedia"
-	"log"
-	"os"
-	"os/signal"
 )
 
 const (
@@ -51,8 +53,15 @@ func main() {
 		log.Fatalf("Cannot open the session: %v", err)
 	}
 
+	registerCommands()
+
+	defer shutdown(session)
+	listenOsSignal()
+}
+
+func registerCommands() {
 	logrus.Info("Registering commands...")
-	err = DAC.RegisterCommands(guildId,
+	err := DAC.RegisterCommands(guildId,
 		pingpong.Command,
 		wikipedia.Command,
 	)
@@ -60,17 +69,19 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Error("Couldn't register commands")
 	}
+}
 
-	defer func(session *discordgo.Session) {
-		err := session.Close()
-		if err != nil {
-			logrus.WithError(err).Info("Couldn't properly close websocket connection to Discord")
-		}
-		logrus.Info("Bye!")
-	}(session)
+func shutdown(session *discordgo.Session) {
+	err := session.Close()
+	if err != nil {
+		logrus.WithError(err).Info("Couldn't properly close websocket connection to Discord")
+	}
+	logrus.Info("Bye!")
+}
 
+func listenOsSignal() {
 	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	logrus.Info("Press Ctrl+C to exit")
 	<-stop
 }
