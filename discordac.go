@@ -55,7 +55,7 @@ func (ds *DiscordAC) RegisterCommands(guildId string, commands ...*AppliedComman
 		for _, command := range commands {
 			if newSpecification.Type == command.Specification.Type && newSpecification.Name == command.Name() {
 				command.Specification = newSpecification
-				command.GuildId = guildId
+				command.guildId = guildId
 			}
 		}
 	}
@@ -79,7 +79,7 @@ func (ds *DiscordAC) RegisterCommand(guildId string, command *AppliedCommand) er
 	}
 
 	command.Specification = createdCommandSpec
-	command.GuildId = guildId
+	command.guildId = guildId
 
 	addCommands(command)
 
@@ -90,7 +90,7 @@ func (ds *DiscordAC) RegisterCommand(guildId string, command *AppliedCommand) er
 // This should be called during bot shutdown
 func (ds *DiscordAC) UnregisterCommands() {
 	for _, command := range registeredCommands {
-		err := ds.session.ApplicationCommandDelete(ds.session.State.User.ID, command.GuildId, command.Specification.ID)
+		err := ds.session.ApplicationCommandDelete(ds.session.State.User.ID, command.guildId, command.Specification.ID)
 		if err != nil {
 			logrus.WithError(err).Panicf("Couldn't unregister '%v' command", command.Specification.Name)
 		}

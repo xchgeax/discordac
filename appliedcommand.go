@@ -2,6 +2,7 @@ package discordac
 
 import (
 	"fmt"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -10,15 +11,15 @@ import (
 // and holds a corresponding command handler
 type AppliedCommand struct {
 	Specification *discordgo.ApplicationCommand
-	// TODO: find a better approach with guild id?
-	GuildId string
+	// GuildId is an ID of a guild in which the command is registered
+	guildId string
 	// Command implementation
 	Handler func(cc *CommandContext)
 }
 
 // Global determines either SlashCommand is defined to run globally or in AppliedCommand.GuildId
 func (sc AppliedCommand) Global() bool {
-	return sc.GuildId == ""
+	return sc.guildId == ""
 }
 
 func (sc AppliedCommand) InternalName() string {
