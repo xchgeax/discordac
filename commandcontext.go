@@ -46,7 +46,7 @@ func (cc *CommandContext) Respond(content string) {
 
 func (cc *CommandContext) EditResponse(content string) (err error) {
 	_, err = cc.Session.InteractionResponseEdit(cc.Interaction, &discordgo.WebhookEdit{
-		Content: content,
+		Content: &content,
 	})
 
 	return
@@ -78,7 +78,7 @@ func (cc *CommandContext) GetOption(option string) (value *discordgo.Application
 
 func (fm FollowupMessage) Edit(content string) (err error) {
 	fm.Message, err = fm.CommandContext.Session.FollowupMessageEdit(fm.CommandContext.Interaction, fm.Message.ID, &discordgo.WebhookEdit{
-		Content: content,
+		Content: &content,
 	})
 
 	return
